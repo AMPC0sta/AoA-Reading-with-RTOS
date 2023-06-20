@@ -135,7 +135,7 @@ float convert_adc_to_physical_value(int adc_read, int adc_read_a, float point_a,
 int main(void)
 {
   /* USER CODE BEGIN 1 */
-	uint16_t ADC1RES = 0;
+	//uint16_t ADC1RES = 0;
 
   /* USER CODE END 1 */
 
@@ -482,6 +482,7 @@ void task1_read_aoa(void *argument)
 		  HAL_ADC_PollForConversion(&hadc1, 1);
 		  ADC1RES = HAL_ADC_GetValue(&hadc1);
 
+		  printf("Read=%d",ADC1RES);
 		  // do one read every seconds
 		  osDelay(1000);
 		}

@@ -64,8 +64,8 @@ all: main-build
 main-build: AOA-Reader-RTOS.elf secondary-outputs
 
 # Tool invocations
-AOA-Reader-RTOS.elf AOA-Reader-RTOS.map: $(OBJS) $(USER_OBJS) C:\Users\User\STM32CubeIDE\workspace_1.11.2\AOA-Reader-RTOS\STM32F767ZITX_FLASH.ld makefile objects.list $(OPTIONAL_TOOL_DEPS)
-	arm-none-eabi-gcc -o "AOA-Reader-RTOS.elf" @"objects.list" $(USER_OBJS) $(LIBS) -mcpu=cortex-m7 -T"C:\Users\User\STM32CubeIDE\workspace_1.11.2\AOA-Reader-RTOS\STM32F767ZITX_FLASH.ld" --specs=nosys.specs -Wl,-Map="AOA-Reader-RTOS.map" -Wl,--gc-sections -static --specs=nano.specs -mfpu=fpv5-d16 -mfloat-abi=hard -mthumb -Wl,--start-group -lc -lm -Wl,--end-group
+AOA-Reader-RTOS.elf AOA-Reader-RTOS.map: $(OBJS) $(USER_OBJS) C:\Users\User\STM32CubeIDE\workspace_1.11.2\AOA-Reader-RTOS\AoA-Reading-with-RTOS\STM32F767ZITX_FLASH.ld makefile objects.list $(OPTIONAL_TOOL_DEPS)
+	arm-none-eabi-gcc -o "AOA-Reader-RTOS.elf" @"objects.list" $(USER_OBJS) $(LIBS) -mcpu=cortex-m7 -T"C:\Users\User\STM32CubeIDE\workspace_1.11.2\AOA-Reader-RTOS\AoA-Reading-with-RTOS\STM32F767ZITX_FLASH.ld" --specs=nosys.specs -Wl,-Map="AOA-Reader-RTOS.map" -Wl,--gc-sections -static --specs=nano.specs -mfpu=fpv5-d16 -mfloat-abi=hard -mthumb -Wl,--start-group -lc -lm -Wl,--end-group
 	@echo 'Finished building target: $@'
 	@echo ' '
 
