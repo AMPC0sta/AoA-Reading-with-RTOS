@@ -58,6 +58,11 @@ const osThreadAttr_t Read_AoA_attributes = {
   .stack_size = 128 * 4,
   .priority = (osPriority_t) osPriorityHigh,
 };
+/* Definitions for writing_AoA */
+osEventFlagsId_t writing_AoAHandle;
+const osEventFlagsAttr_t writing_AoA_attributes = {
+  .name = "writing_AoA"
+};
 /* USER CODE BEGIN PV */
 
 /* USER CODE END PV */
@@ -80,7 +85,7 @@ void task1_read_aoa(void *argument);
 // Global variable that contain digital reading from AoA sensor.
 uint16_t ADC1RES = 0;
 float AoA_actual;
-
+float AoA_new;
 
 
 
@@ -117,12 +122,12 @@ float convert_adc_to_physical_value(int adc_read, int adc_read_a, float point_a,
 	 int delta_x=0;
 
 	 delta_y = (point_b) - (point_a);
-	 delta_x = adc_read_b - adc_read_b;
+	 delta_x = adc_read_b - adc_read_a;
 
 	 m = delta_y/delta_x;
-	 n = point_b - m*adc_read_a;
+	 n = 0;
 
-	 point_c = m*adc_read+n;
+	 point_c = m*adc_read-n;
 
 	 return point_c;
 }
@@ -192,6 +197,10 @@ int main(void)
   /* USER CODE BEGIN RTOS_THREADS */
   /* add threads, ... */
   /* USER CODE END RTOS_THREADS */
+
+  /* Create the event(s) */
+  /* creation of writing_AoA */
+  writing_AoAHandle = osEventFlagsNew(&writing_AoA_attributes);
 
   /* USER CODE BEGIN RTOS_EVENTS */
   /* add events, ... */
@@ -439,6 +448,11 @@ static void MX_GPIO_Init(void)
 }
 
 /* USER CODE BEGIN 4 */
+void printITM(char *ptr)
+{
+	for(;ptr != 0;ptr++)
+		ITM_SendChar(*ptr);
+}
 
 /* USER CODE END 4 */
 
@@ -482,11 +496,26 @@ void task1_read_aoa(void *argument)
 		  HAL_ADC_PollForConversion(&hadc1, 1);
 		  ADC1RES = HAL_ADC_GetValue(&hadc1);
 
-		  printf("Read=%d",ADC1RES);
+		  // Convert digital value to AoA. pot range [0..270]
+		  // point_a = (6,0)
+		  // point_b = (4094,270)
+		  AoA_actual = convert_adc_to_physical_value(ADC1RES,6,0,4094,270);
+
+
+		  // horizontal position of the aircraft correspond to the 135º, so that, let's convert it to 0º
+		  if (AoA_actual < 135)
+			  AoA_actual = -1*AoA_actual;
+		  else
+			  AoA_actual = AoA_actual - 135;
+
+		  // Signal consumers that AoA os ready for reading
+		  osEventFlagSet(writing_AoA);
+
+
 		  // do one read every seconds
 		  osDelay(1000);
 		}
-	  /* USER CODE END task1_read_aoa */
+  /* USER CODE END task1_read_aoa */
 }
 
 /**
